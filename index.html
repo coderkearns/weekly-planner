@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Weekly Planner</title>
+	<link rel="stylesheet" href="styles.css" />
+	<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+	<script defer src="index.js"></script>
+	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+	<main class="app-shell" x-data="plannerApp" x-init="init()" x-cloak>
+		<nav class="screen-tabs" aria-label="Planner screens">
+			<button type="button" class="tab-button" :class="screen === 'editor' ? 'is-active' : 'is-inactive'" @click="setScreen('editor')">Edit questions</button>
+			<button type="button" class="tab-button" :class="screen === 'walkthrough' ? 'is-active' : 'is-inactive'" @click="setScreen('walkthrough')">Start walkthrough</button>
+		</nav>
+
+		<section class="screen screen-saved" x-show="screen === 'saved'" x-transition>
+			<header class="screen-head">
+				<div>
+					<p class="panel-kicker">Saved plan</p>
+					<h2>Ready for the week</h2>
+				</div>
+				<p class="saved-meta">Created <span x-text="formattedSavedAt"></span></p>
+			</header>
+
+			<div class="saved-stack">
+				<template x-for="category in savedPlan?.categories || []" :key="category.id">
+					<section class="saved-category">
+						<h3 x-text="category.name"></h3>
+						<p class="muted" x-show="category.description" x-text="category.description"></p>
+
+						<div class="saved-answers">
+							<template x-for="question in category.questions" :key="question.id">
+								<div class="saved-answer-row">
+									<p class="question-title" x-text="question.title"></p>
+									<p class="question-answer" x-text="question.answer || 'No answer yet.'"></p>
+								</div>
+							</template>
+						</div>
+					</section>
+				</template>
+			</div>
+
+			<div class="screen-actions">
+				<button type="button" class="danger-button" @click="clearSavedPlan()">Clear saved plan</button>
+			</div>
+		</section>
+
+		<section class="screen screen-walkthrough" x-show="screen === 'walkthrough'" x-transition>
+			<header class="screen-head">
+				<div>
+					<p class="panel-kicker">Walkthrough</p>
+					<h2 x-text="currentCategory?.name || 'Planner'"></h2>
+				</div>
+				<div class="progress-meta progress-meta-compact">
+					<span x-text="`Category ${currentCategoryIndex + 1} of ${questionSet.length}`"></span>
+					<span x-text="isLastCategory ? 'Last category' : 'Keep going'"></span>
+				</div>
+			</header>
+
+			<div class="progress-track" aria-hidden="true">
+				<div class="progress-fill" :style="`width: ${progressPercent}%`"></div>
+			</div>
+
+			<div class="question-stack">
+				<template x-for="question in currentCategory?.questions || []" :key="question.id">
+					<section class="question-block">
+						<div class="question-heading">
+							<div>
+								<p class="question-label">Question</p>
+								<h3 x-text="question.title"></h3>
+							</div>
+							<p class="question-default" x-show="question.default" x-text="`Default: ${question.default}`"></p>
+						</div>
+						<p class="muted" x-show="question.description" x-text="question.description"></p>
+						<textarea rows="4" x-model="draftAnswers[question.id]" :placeholder="question.default || 'Type your answer here'"></textarea>
+					</section>
+				</template>
+			</div>
+
+			<div class="screen-actions screen-actions-spread">
+				<button type="button" class="primary-button next-button" @click="nextCategory()" x-text="isLastCategory ? 'Save plan' : 'Next'"></button>
+			</div>
+		</section>
+
+		<section class="screen screen-editor" x-show="screen === 'editor'" x-transition>
+			<header class="screen-head editor-head">
+				<div>
+					<p class="panel-kicker">Question editor</p>
+					<h2>Shape the prompts</h2>
+				</div>
+				<div class="editor-head-actions">
+					<button type="button" class="primary-button" @click="addCategory()">Add category</button>
+					<button type="button" class="secondary-button" @click="resetQuestionSet()">Restore defaults</button>
+				</div>
+			</header>
+
+			<div class="editor-stack">
+				<template x-for="(category, categoryIndex) in questionSet" :key="category.id">
+					<section class="editor-category">
+						<div class="editor-category-header">
+							<div>
+								<p class="question-label">Category</p>
+								<input type="text" x-model="category.name" placeholder="Category name" />
+							</div>
+							<button type="button" class="danger-button" @click="removeCategory(categoryIndex)" :disabled="questionSet.length <= 1"></button>
+						</div>
+
+						<div class="field">
+							<label>Description</label>
+							<div class="field-row">
+								<textarea rows="2" x-model="category.description" placeholder="Optional category description"></textarea>
+								<button type="button" class="ghost-button" @click="category.description = ''" :disabled="!category.description">Clear</button>
+							</div>
+						</div>
+
+						<div class="questions-editor">
+							<template x-for="(question, questionIndex) in category.questions" :key="question.id">
+								<div class="question-editor">
+									<div class="question-editor-header">
+										<p class="question-label">Question</p>
+										<button type="button" class="danger-button" @click="removeQuestion(categoryIndex, questionIndex)" :disabled="category.questions.length <= 1"></button>
+									</div>
+
+									<div class="field">
+										<label>Prompt</label>
+										<input type="text" x-model="question.title" placeholder="Question title" />
+									</div>
+
+									<div class="field">
+										<label>Description</label>
+										<div class="field-row">
+											<textarea rows="3" x-model="question.description" placeholder="Optional helper text"></textarea>
+											<button type="button" class="ghost-button" @click="clearQuestionField(question, 'description')" :disabled="!question.description">Clear</button>
+										</div>
+									</div>
+
+									<div class="field">
+										<label>Default answer</label>
+										<div class="field-row">
+											<input type="text" x-model="question.default" placeholder="Optional default answer" />
+											<button type="button" class="ghost-button" @click="clearQuestionField(question, 'default')" :disabled="!question.default">Clear</button>
+										</div>
+									</div>
+								</div>
+							</template>
+						</div>
+
+						<div class="screen-actions screen-actions-left">
+							<button type="button" class="secondary-button" @click="addQuestion(categoryIndex)">Add question</button>
+						</div>
+					</section>
+				</template>
+			</div>
+
+			<div class="backup-actions">
+				<button type="button" class="secondary-button" @click="exportQuestionSet()">Export file</button>
+				<button type="button" class="secondary-button" @click="triggerImportPicker()" :disabled="isImporting">Import file</button>
+				<input x-ref="importFileInput" type="file" accept=".json,application/json" class="visually-hidden" @change="importQuestionFile($event)" />
+			</div>
+
+			<div class="screen-actions screen-actions-left editor-footer-actions">
+				<button type="button" class="secondary-button" @click="backFromEditor()">Back</button>
+			</div>
+
+			<p class="status-message" x-show="statusMessage" x-text="statusMessage"></p>
+		</section>
+	</main>
+</body>
+</html>
