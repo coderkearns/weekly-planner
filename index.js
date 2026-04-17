@@ -1,51 +1,159 @@
 const DEFAULT_QUESTION_SET = [
     {
-        id: "cat-centering",
-        name: "Centering",
-        description: "Start with the things that shape the rest of the week.",
+        id: "cat-spiritual",
+        name: "Spiritual",
+        description: "",
         questions: [
             {
-                id: "q-centering-study",
-                title: "What will you study or reflect on this week?",
-                description: "Pick something that keeps your attention steady.",
-                default: "The Book of Mormon"
+                id: "q-spiritual-study",
+                title: "Study",
+                description: "What topics do I want to study this week?",
+                default: "Book of Mormon EVERY DAY\nCome, Follow Me:"
             },
             {
-                id: "q-centering-focus",
-                title: "What one attribute or habit do you want to strengthen?",
-                description: "Include a sentence about how you will practice it.",
+                id: "q-spiritual-attribute",
+                title: "Christlike Attribute of the Week",
+                description: "Take the attribute assessment. What thoughts, desires, and intents of the heart do I need to develop this week to grow in this attribute?",
+                default: ""
+            },
+            {
+                id: "q-spiritual-calling",
+                title: "Calling",
+                description: "",
+                default: ""
+            },
+            {
+                id: "q-spiritual-service",
+                title: "Service",
+                description: "",
+                default: ""
+            },
+            {
+                id: "q-spiritual-temple",
+                title: "Temple",
+                description: "Book temple session. Who will I invite?",
+                default: ""
+            },
+            {
+                id: "q-spiritual-misc",
+                title: "Misc.",
+                description: "",
                 default: ""
             }
         ]
     },
     {
-        id: "cat-body",
-        name: "Body",
-        description: "Keep the plan grounded in energy, rest, and movement.",
+        id: "cat-physical",
+        name: "Physical",
+        description: "",
         questions: [
             {
-                id: "q-body-care",
-                title: "How will you take care of your body this week?",
-                description: "Think movement, sleep, hydration, or recovery.",
-                default: "Go on a hike on Saturday"
+                id: "q-physical-meals",
+                title: "Meal Planning",
+                description: "",
+                default: ""
+            },
+            {
+                id: "q-physical-outdoor",
+                title: "Outdoor Time",
+                description: "",
+                default: "hike on..."
+            },
+            {
+                id: "q-physical-misc",
+                title: "Misc.",
+                description: "Do I need a haircut? Doctor's appointment? Prescriptions?",
+                default: ""
             }
         ]
     },
     {
-        id: "cat-priorities",
-        name: "Priorities",
-        description: "Pick the work that will make the week feel complete.",
+        id: "cat-intellectual",
+        name: "Intellectual",
+        description: "",
         questions: [
             {
-                id: "q-priorities-top3",
-                title: "What are the three most important things this week?",
-                description: "Short, specific, and easy to scan later.",
+                id: "q-intellectual-assignments",
+                title: "School Assignments",
+                description: "",
                 default: ""
             },
             {
-                id: "q-priorities-risk",
-                title: "What could get in the way, and how will you respond?",
-                description: "Name the friction before the week gets busy.",
+                id: "q-intellectual-project",
+                title: "Project of the Week",
+                description: "",
+                default: ""
+            },
+            {
+                id: "q-intellectual-misc",
+                title: "Misc.",
+                description: "",
+                default: ""
+            }
+        ]
+    },
+    {
+        id: "cat-social",
+        name: "Social",
+        description: "",
+        questions: [
+            {
+                id: "q-social-family",
+                title: "Family",
+                description: "",
+                default: "Call Grandpa"
+            },
+            {
+                id: "q-social-friends",
+                title: "Friends",
+                description: "",
+                default: "Check in on ____"
+            },
+            {
+                id: "q-social-missionaries",
+                title: "Missionaries",
+                description: "",
+                default: ""
+            },
+            {
+                id: "q-social-dates",
+                title: "Dates",
+                description: "",
+                default: ""
+            },
+            {
+                id: "q-social-ministering",
+                title: "Ministering",
+                description: "",
+                default: `Each - 
+Person - 
+You - 
+Minister - 
+To - `
+            },
+            {
+                id: "q-social-misc",
+                title: "Misc.",
+                description: "",
+                default: ""
+            }
+        ]
+    },
+    {
+        id: "cat-financial",
+        name: "Financial",
+        description: "",
+        questions: [
+            {
+                id: "q-financial-budget",
+                title: "Budget Check-up",
+                description: "",
+                default: ""
+            },
+            {
+                id: "q-financial-misc",
+                title: "Misc.",
+                description: "",
                 default: ""
             }
         ]
